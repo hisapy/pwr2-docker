@@ -40,8 +40,7 @@ defmodule Webapp.Mixfile do
       :gettext,
       :phoenix_ecto,
       :postgrex,
-      :starwars,
-      :greeter
+      :starwars
     ]
   end
 
