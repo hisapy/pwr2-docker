@@ -71,8 +71,7 @@ defmodule Webapp.Mixfile do
      {:white_bread, "~> 2.5", only: [:dev, :test] },
      {:mix_test_watch, "~> 0.2", only: :dev},
      {:ex_machina, "~> 1.0", only: :test},
-     {:starwars, in_umbrella: true},
-     {:greeter, in_umbrella: true}
+     {:starwars, in_umbrella: true}
     ]
   end
 
