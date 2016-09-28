@@ -1,4 +1,4 @@
-defmodule Webapp.GraphQL.StarWars.Types do
+defmodule Starwars.GraphQL.StarWars.Types do
   @moduledoc """
   This is an Elixir/Absinthe.Relay version of the GraphQL schema defined in:
   https://github.com/relayjs/relay-examples/blob/master/star-wars/data/schema.js
@@ -10,7 +10,7 @@ defmodule Webapp.GraphQL.StarWars.Types do
   use Absinthe.Relay.Schema.Notation
 
   alias Absinthe.Relay.Connection
-  alias Webapp.GraphQL.StarWarsDB
+  alias Starwars.GraphQL.StarWarsDB
   alias Webapp.GraphQL.Resolver
 
 

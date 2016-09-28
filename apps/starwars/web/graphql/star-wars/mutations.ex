@@ -1,8 +1,8 @@
-defmodule Webapp.GraphQL.StarWars.Mutations do
+defmodule Starwars.GraphQL.StarWars.Mutations do
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation
   alias Absinthe.Relay.Connection
-  alias Webapp.GraphQL.StarWarsDB
+  alias Starwars.GraphQL.StarWarsDB
 
   object :star_wars_mutations do
     @desc """

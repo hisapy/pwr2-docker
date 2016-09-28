@@ -7,8 +7,8 @@ defmodule Webapp.GraphQL.Schema do
   import_types Webapp.GraphQL.Types.Viewer
 
   # StarWars exaple types and mutations
-  import_types Webapp.GraphQL.StarWars.Types
-  import_types Webapp.GraphQL.StarWars.Mutations
+  import_types Starwars.GraphQL.StarWars.Types
+  import_types Starwars.GraphQL.StarWars.Mutations
 
   query do
     import_fields :viewer_field

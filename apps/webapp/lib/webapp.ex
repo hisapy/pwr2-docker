@@ -15,7 +15,7 @@ defmodule Webapp do
       # Start your own worker by calling: Webapp.Worker.start_link(arg1, arg2, arg3)
       # worker(Webapp.Worker, [arg1, arg2, arg3]),
       worker(GuardianDb.ExpiredSweeper, []),
-      worker(Webapp.GraphQL.StarWarsDB, [])
+      worker(Starwars.GraphQL.StarWarsDB, [])
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
