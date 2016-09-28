@@ -18,13 +18,21 @@ defmodule Webapp.Web do
 
   def model do
     quote do
-      # Define common model functionality
+      use Ecto.Schema
+
+      import Ecto
+      import Ecto.Changeset
+      import Ecto.Query
     end
   end
 
   def controller do
     quote do
       use Phoenix.Controller
+
+      alias Webapp.Repo
+      import Ecto
+      import Ecto.Query
 
       import Webapp.Router.Helpers
       import Webapp.Gettext
@@ -36,7 +44,7 @@ defmodule Webapp.Web do
       use Phoenix.View, root: "web/templates"
 
       # Import convenience functions from controllers
-      import Phoenix.Controller, only: [get_csrf_token: 0, get_flash: 2, view_module: 1]
+      import Phoenix.Controller, only: [get_csrf_token: 0, get_flash: 2, view_module: 1, action_name: 1]
 
       # Use all HTML functionality (forms, tags, etc)
       use Phoenix.HTML
@@ -44,6 +52,13 @@ defmodule Webapp.Web do
       import Webapp.Router.Helpers
       import Webapp.ErrorHelpers
       import Webapp.Gettext
+
+      # TODO: Add tests for this and move it to its own module
+      def view_action(conn) do
+        view = view_module(conn) |> to_string
+        "#{String.replace(view, ~r/.+\.(.+)View/, "\\g{1}")}-#{action_name conn}"
+        |> String.downcase
+      end
     end
   end
 
@@ -56,6 +71,10 @@ defmodule Webapp.Web do
   def channel do
     quote do
       use Phoenix.Channel
+
+      alias Webapp.Repo
+      import Ecto
+      import Ecto.Query
       import Webapp.Gettext
     end
   end

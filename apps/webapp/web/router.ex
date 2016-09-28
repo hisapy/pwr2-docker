@@ -1,9 +1,7 @@
-require Starwars.Router
-require Greeter.Router
-
 defmodule Webapp.Router do
   use Webapp.Web, :router
 
+  # Pipelines
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -11,28 +9,40 @@ defmodule Webapp.Router do
     plug :protect_from_forgery
     plug :put_secure_browser_headers
   end
-
-  pipeline :api do
+  pipeline :browser_auth do
+   plug Guardian.Plug.VerifySession
+   plug Guardian.Plug.LoadResource
+  end
+  pipeline :graphql do
     plug :accepts, ["json"]
+    plug Guardian.Plug.VerifyHeader, realm: "Bearer"
+    plug Guardian.Plug.LoadResource
+    plug Webapp.Plug.GraphQLContext, repo: Webapp.Repo
+  end
+
+  # Routes
+  # NOTE: every data related request is done through GraphQL, including login/logout.
+  scope "/graphql" do
+    pipe_through [:graphql]
+
+    post "/graphiql", Absinthe.Plug.GraphiQL, schema: Webapp.GraphQL.Schema
+    forward "/", Absinthe.Plug, schema: Webapp.GraphQL.Schema
   end
 
   scope "/", Webapp do
-    pipe_through :browser # Use the default browser stack
+    pipe_through [:browser, :browser_auth]
 
     get "/", PageController, :index
+    get "/login", PageController, :login
   end
 
-  # act as final catch
-  scope "/starwars" do
-    forward "/", Starwars.Router
+  scope "/admin", Webapp.Admin, as: :admin do
+    pipe_through [:browser, :browser_auth]
+    # forward "/files", Exfile.Router
+
+    get "/", PageController, :index
+    get "/graphiql", PageController, :graphiql
+    get "/star-wars", PageController, :star_wars
   end
 
-  scope "/greeter" do
-    forward "/", Greeter.Router
-  end
-
-  # Other scopes may use custom stacks.
-  # scope "/api", Webapp do
-  #   pipe_through :api
-  # end
 end
