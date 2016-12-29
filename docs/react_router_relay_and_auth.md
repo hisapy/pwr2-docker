@@ -2,12 +2,12 @@
 
 ## Auth
 
-[Auth](apps/webapp/web/static/js/lib/auth.js) is a class created to manage the `Relay.Environment` and any information related to the authentication process, for example the [JWT access token](https://jwt.io/introduction/). Most of the `Auth` functions are self explanatory the only thing that could be a little tricky is the `logout(callback)`. Logout receives an optional callback function as argument, but `Auth` also have an `onLogout` property  that is an optional function that is executed before the mentioned callback. This `onLogout` property is very useful because `Auth` is imported as a singleton so you can set this property in any moment. You can see this in action in the code bellow.
+[Auth](ui/core/src/lib/auth.js) is a module created to manage the `Relay.Environment` and any information related to the authentication process, for example the [JWT access token](https://jwt.io/introduction/). Most of the `Auth` functions are self explanatory. You can see some of this in action in the code in the sections bellow.
 
+## react-router-relay environment
 
-## react-router-relay
+For security reasons you might want to reset the Router environment (_stored in the browser_) every time a User logs in or out. We first tried to implement environment as a function but ended up changing the `Application` state to trigger its `render()` as discussed in the [pull request](https://goo.gl/vwxrPK) and like in the following example:
 
-We need to reset the Router environment because when an user logs out we need to remove all the data stored there. A simple solution would be to use environment as a function, in that case we could change the function's returned value and it would be very straightforward. But as [react-router-relay does not support this feature](https://goo.gl/vwxrPK) we have to do the following:
 ```javascript
 /*
   Extract routes as a constant so it is re used for every render
@@ -32,36 +32,33 @@ const routes = (
   react render every time the environment changes
 */
 
+
 class Application extends React.Component{
+  constructor(props){
+    super(props);
+    this.state = {environment: Auth.getEnvironment()};
+    Auth.afterLogin = () => this.resetRelayEnvironment();
+    Auth.afterLogout = () => this.resetRelayEnvironment();
+  }
 
- constructor(props){
-   super(props);
-   this.state = { environment: Auth.getEnvironment() };
-   Auth.onLogout = ()=> this.handleLogout();
- }
+  resetRelayEnvironment(){
+    this.setState({environment: Auth.getEnvironment()});
+  }
 
- /*
- Now every time you change the state's environment
- For example with 'handleLogout', react will re render the routes
- */
- handleLogout(){
-   this.setState({ environment: Auth.getEnvironment() })
- }
-
- render(){
-   return (
-     <Router history={browserHistory}
-       render={applyRouterMiddleware(useRelay)}
-       environment={this.state.environment}>
-       {routes}
-     </Router>
-   );
- }
+  render(){
+    return (
+      <Router history={browserHistory}
+        render={applyRouterMiddleware(useRelay)}
+        environment={this.state.environment}>
+        {routes}
+      </Router>
+    );
+  }
 }
 
 ReactDOM.render(
- <Application/>,
- document.getElementById('react-root')
+  <Application />,
+  document.getElementById('react-root')
 );
 
 ```
